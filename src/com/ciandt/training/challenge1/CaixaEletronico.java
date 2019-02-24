@@ -7,8 +7,8 @@ import java.util.Map;
 
 public class CaixaEletronico {
 	 
-	private Map<Integer, Integer> caixa = new HashMap<Integer, Integer>();
-	private Map<Integer, Integer> notas = new HashMap<Integer, Integer>();
+	private Map<Notas, Integer> caixa = new HashMap<Notas, Integer>();
+	private Map<Notas, Integer> notas = new HashMap<Notas, Integer>();
 	private double valorSaque;
 	
 	private final double VALOR_MAXIMO = 1000d;
@@ -19,21 +19,21 @@ public class CaixaEletronico {
 	}
 	
 	private void iniciar() {
-		caixa.put(2, QTD_NOTAS);
-		caixa.put(5, QTD_NOTAS);
-		caixa.put(10, QTD_NOTAS);
-		caixa.put(20, QTD_NOTAS);
-		caixa.put(50, QTD_NOTAS);
-		caixa.put(100, QTD_NOTAS);
+		caixa.put(Notas.DOIS, QTD_NOTAS);
+		caixa.put(Notas.CINCO, QTD_NOTAS);
+		caixa.put(Notas.DEZ, QTD_NOTAS);
+		caixa.put(Notas.VINTE, QTD_NOTAS);
+		caixa.put(Notas.CINQUENTA, QTD_NOTAS);
+		caixa.put(Notas.CEM, QTD_NOTAS);
 	}
 	
 	private void zerarNotas() {
-		notas.put(2, 0);
-		notas.put(5, 0);
-		notas.put(10, 0);
-		notas.put(20, 0);
-		notas.put(50, 0);
-		notas.put(100, 0); 
+		notas.put(Notas.DOIS, 0);
+		notas.put(Notas.CINCO, 0);
+		notas.put(Notas.DEZ, 0);
+		notas.put(Notas.VINTE, 0);
+		notas.put(Notas.CINQUENTA, 0);
+		notas.put(Notas.CEM, 0); 
 	}
 
 	public void sacar(int valor) {
@@ -45,40 +45,40 @@ public class CaixaEletronico {
 		}
 		
 		while (valor > 0) {
-			if (valor >= 100 && temNotaCaixa(100)) {
+			if (valor >= 100 && temNota(Notas.CEM)) {
 				valor -= 100;
-				caixa.put(100, caixa.get(100) - 1);
-				notas.put(100, notas.get(100) + 1);
+				caixa.put(Notas.CEM, caixa.get(Notas.CEM) - 1);
+				notas.put(Notas.CEM, notas.get(Notas.CEM) + 1);
 				continue;
 			}
-			if (valor >= 50 && valor < 100 && temNotaCaixa(50)) {
+			if (valor >= 50 && valor < 100 && temNota(Notas.CINQUENTA)) {
 				valor -= 50;
-				caixa.put(50, caixa.get(50) - 1);
-				notas.put(50, notas.get(50) + 1);
+				caixa.put(Notas.CINQUENTA, caixa.get(Notas.CINQUENTA) - 1);
+				notas.put(Notas.CINQUENTA, notas.get(Notas.CINQUENTA) + 1);
 				continue;
 			}
-			if (valor >= 20 && valor < 50 && temNotaCaixa(20)) {
+			if (valor >= 20 && valor < 50 && temNota(Notas.VINTE)) {
 				valor -= 20;
-				caixa.put(20, caixa.get(20) - 1);
-				notas.put(20, notas.get(20) + 1);
+				caixa.put(Notas.VINTE, caixa.get(Notas.VINTE) - 1);
+				notas.put(Notas.VINTE, notas.get(Notas.VINTE) + 1);
 				continue;
 			}
-			if (valor >= 10 && valor < 20 && temNotaCaixa(10)) {
+			if (valor >= 10 && valor < 20 && temNota(Notas.DEZ)) {
 				valor -= 10;
-				caixa.put(10, caixa.get(10) - 1);
-				notas.put(10, notas.get(10) + 1);
+				caixa.put(Notas.DEZ, caixa.get(Notas.DEZ) - 1);
+				notas.put(Notas.DEZ, notas.get(Notas.DEZ) + 1);
 				continue;
 			}
-			if (valor >= 5 && valor < 10 && temNotaCaixa(5)) {
+			if (valor >= 5 && valor < 10 && temNota(Notas.CINCO)) {
 				valor -= 5;
-				caixa.put(5, caixa.get(5) - 1);
-				notas.put(5, notas.get(5) + 1);
+				caixa.put(Notas.CINCO, caixa.get(Notas.CINCO) - 1);
+				notas.put(Notas.CINCO, notas.get(Notas.CINCO) + 1);
 				continue;
 			}
-			if (valor >= 2 && valor < 5 && temNotaCaixa(2)) {
+			if (valor >= 2 && valor < 5 && temNota(Notas.DOIS)) {
 				valor -= 2;
-				caixa.put(2, caixa.get(2) - 1);
-				notas.put(2, notas.get(2) + 1);
+				caixa.put(Notas.DOIS, caixa.get(Notas.DOIS) - 1);
+				notas.put(Notas.DOIS, notas.get(Notas.DOIS) + 1);
 				continue;
 			} else {
 				valor = 0;
@@ -88,6 +88,7 @@ public class CaixaEletronico {
 		visualizarNotasSacadas();
 		System.out.format("Saque de %s efetuado!%n",valorSaque);
 		System.out.println("Obrigado, volte sempre!");
+		visualizarTotalCaixa();
 	}
 	
 	private boolean valorValido(int valor) {
@@ -96,6 +97,10 @@ public class CaixaEletronico {
 			  System.out.println("Não é permitido sacar mais do que R$" + VALOR_MAXIMO + "." );
 			  return false;
 		  } else {
+			  if (valor > valorCaixa()) {
+				  System.out.println("Não há dinheiro suficiente no caixa!");
+				  return false;
+			  }
 			  if (!ehMultiplo(valor)) {
 				  System.out.format("Valor %s inválido!", valor);
 				  return false;
@@ -109,15 +114,15 @@ public class CaixaEletronico {
 	}
 	
 	private boolean ehMultiplo(int valor) {
-		for (Map.Entry<Integer, Integer> pair: caixa.entrySet()) {
-			if (valor % pair.getKey() == 0) {
+		for (Map.Entry<Notas, Integer> pair: caixa.entrySet()) {
+			if (valor % pair.getKey().valorNota == 0) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public void visualizarCaixa() {
+	public void visualizarCaixa() { 
 		caixa.forEach((k, v) -> {
             System.out.format("Notas: %s, Quantidade: %d%n", k, v);
         });
@@ -126,13 +131,13 @@ public class CaixaEletronico {
 	public void visualizarNotasSacadas() {
 		notas.forEach((k, v) -> {
 			if (v > 0) {
-	            System.out.format("%s de %d%n", v, k);
+	            System.out.format("%s de %d%n", v, k.valorNota);
 			}
         });
 	}
 	
-	private boolean temNotaCaixa(int valor) {
-		return caixa.get(valor) > 0;
+	private boolean temNota(Notas nota) {
+		return caixa.get(nota) > 0;
 	}
 	
 	public enum Notas {
@@ -144,5 +149,16 @@ public class CaixaEletronico {
 	    }
 	}
 
-	 
+	public int valorCaixa() {
+		//return caixa.values().stream().mapToInt(Integer::intValue).sum();
+		int valor = 0;
+		for (Map.Entry<Notas, Integer> pair: caixa.entrySet()) {
+			valor += pair.getKey().valorNota * pair.getValue();
+		}
+		 return valor;
+	}
+	
+	public void visualizarTotalCaixa() {
+		System.out.println("Valor total em caixa: " + valorCaixa());
+	}
 }

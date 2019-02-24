@@ -2,7 +2,7 @@ package com.ciandt.training.challenge1;
  
 
 public class Main {
-
+ 
 	public static void main(String[] args) {
 		CaixaEletronico caixaEletronico = new CaixaEletronico();
 		
@@ -16,6 +16,28 @@ public class Main {
 			caixaEletronico.sacar(500);
 			caixaEletronico.visualizarCaixa();
 			caixaEletronico.sacar(662);
+			caixaEletronico.visualizarCaixa();
+			caixaEletronico.sacar(1000);
+			caixaEletronico.visualizarCaixa();
+			caixaEletronico.sacar(1000);
+			caixaEletronico.visualizarCaixa();
+			caixaEletronico.sacar(1000);
+			caixaEletronico.visualizarCaixa();
+			caixaEletronico.sacar(1000);
+			caixaEletronico.visualizarCaixa();
+			caixaEletronico.sacar(1000);
+			caixaEletronico.visualizarCaixa();
+			caixaEletronico.sacar(1000);
+			caixaEletronico.visualizarCaixa();
+			caixaEletronico.sacar(1000);
+			caixaEletronico.visualizarCaixa();
+			caixaEletronico.sacar(1000);
+			caixaEletronico.visualizarCaixa();
+			caixaEletronico.sacar(1000);
+			caixaEletronico.visualizarCaixa();
+			caixaEletronico.sacar(1000);
+			caixaEletronico.visualizarCaixa();
+			caixaEletronico.sacar(1000);
 			caixaEletronico.visualizarCaixa();
 		} 
 		catch (IllegalArgumentException e) {
