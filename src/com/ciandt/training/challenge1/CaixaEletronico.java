@@ -1,9 +1,9 @@
 package com.ciandt.training.challenge1;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class CaixaEletronico {
 	 
@@ -11,7 +11,7 @@ public class CaixaEletronico {
 	private Map<Notas, Integer> notas = new HashMap<Notas, Integer>();
 	private double valorSaque;
 	
-	private final double VALOR_MAXIMO = 1000d;
+	private final double VALOR_MAXIMO = 10000d;
 	private final int QTD_NOTAS = 100;	 
 	
 	public CaixaEletronico() {
@@ -36,59 +36,75 @@ public class CaixaEletronico {
 		notas.put(Notas.CEM, 0); 
 	}
 
-	public void sacar(int valor) {
+	public void sacar(int valor) { 
+		System.out.println("##### Início Saque #####");
+		System.out.println("Valor saque: " + valor);
+		visualizarTotalCaixa();
 		zerarNotas();
 		this.valorSaque = valor;
 		
 		if (!valorValido(valor)) {
 			return;
-		}
-		
-		while (valor > 0) {
-			if (valor >= 100 && temNota(Notas.CEM)) {
-				valor -= 100;
-				caixa.put(Notas.CEM, caixa.get(Notas.CEM) - 1);
-				notas.put(Notas.CEM, notas.get(Notas.CEM) + 1);
-				continue;
-			}
-			if (valor >= 50 && valor < 100 && temNota(Notas.CINQUENTA)) {
-				valor -= 50;
-				caixa.put(Notas.CINQUENTA, caixa.get(Notas.CINQUENTA) - 1);
-				notas.put(Notas.CINQUENTA, notas.get(Notas.CINQUENTA) + 1);
-				continue;
-			}
-			if (valor >= 20 && valor < 50 && temNota(Notas.VINTE)) {
-				valor -= 20;
-				caixa.put(Notas.VINTE, caixa.get(Notas.VINTE) - 1);
-				notas.put(Notas.VINTE, notas.get(Notas.VINTE) + 1);
-				continue;
-			}
-			if (valor >= 10 && valor < 20 && temNota(Notas.DEZ)) {
-				valor -= 10;
-				caixa.put(Notas.DEZ, caixa.get(Notas.DEZ) - 1);
-				notas.put(Notas.DEZ, notas.get(Notas.DEZ) + 1);
-				continue;
-			}
-			if (valor >= 5 && valor < 10 && temNota(Notas.CINCO)) {
-				valor -= 5;
-				caixa.put(Notas.CINCO, caixa.get(Notas.CINCO) - 1);
-				notas.put(Notas.CINCO, notas.get(Notas.CINCO) + 1);
-				continue;
-			}
-			if (valor >= 2 && valor < 5 && temNota(Notas.DOIS)) {
-				valor -= 2;
-				caixa.put(Notas.DOIS, caixa.get(Notas.DOIS) - 1);
-				notas.put(Notas.DOIS, notas.get(Notas.DOIS) + 1);
-				continue;
-			} else {
-				valor = 0;
-			}
-		}
+		} 
+		 
+		obterNotas(valor);
 		
 		visualizarNotasSacadas();
 		System.out.format("Saque de %s efetuado!%n",valorSaque);
 		System.out.println("Obrigado, volte sempre!");
-		visualizarTotalCaixa();
+		System.out.println("##### Fim Saque #####");
+		
+	}
+
+	private void obterNotas(int valor) {  
+		int qtdNotas; 		
+		Notas maiorNota = Notas.getNota(obterMaiorNotaDisponivel(valor));
+		while (valor > 0) {
+			qtdNotas = 0;
+			if (valor >= maiorNota.valorNota ) {
+				qtdNotas = valor / maiorNota.valorNota; 
+				caixa.put(maiorNota, caixa.get(maiorNota) - qtdNotas);
+				notas.put(maiorNota, notas.get(maiorNota) + qtdNotas);
+				valor %= maiorNota.valorNota;
+			    
+				if (caixa.get(maiorNota) < 0) {
+					notas.put(maiorNota, notas.get(maiorNota) + caixa.get(maiorNota));
+					valor += maiorNota.valorNota * (caixa.get(maiorNota) * -1);
+					caixa.put(maiorNota, 0);					
+				}
+				
+				if (valor > 0) {
+					obterNotas(valor);
+					return;
+				} 
+			}  
+		} 
+		 
+	}
+	
+	private int obterMaiorNotaDisponivel(int valor) {
+		
+		if (temNota(Notas.CEM) && valor >= 100 ) {
+			return 100;
+		}
+		if (temNota(Notas.CINQUENTA) && valor >= 50 ) {
+			return 50;
+		}
+		if (temNota(Notas.VINTE) && valor >= 20 ) {
+			return 20;
+		}
+		if (temNota(Notas.DEZ) && valor >= 10 ) {
+			return 10;
+		}
+		if (temNota(Notas.CINCO) && valor >= 5) {
+			if (valor % 5 == 0 || ((valor % 5) % 2 == 0) )
+			return 5;
+		}
+		if (temNota(Notas.DOIS) && valor >= 2 ) {
+			return 2;
+		}
+		
+		return 0;
 	}
 	
 	private boolean valorValido(int valor) {
@@ -114,8 +130,10 @@ public class CaixaEletronico {
 	}
 	
 	private boolean ehMultiplo(int valor) {
+		int resto = 0;
 		for (Map.Entry<Notas, Integer> pair: caixa.entrySet()) {
-			if (valor % pair.getKey().valorNota == 0) {
+			resto = valor % pair.getKey().valorNota;
+			if (resto == 0 || resto == 2 || resto == 5) {
 				return true;
 			}
 		}
@@ -147,6 +165,20 @@ public class CaixaEletronico {
 	    Notas(int valor) {
 	        valorNota = valor;
 	    }
+	    
+	    public static Optional<Notas> valueOf(int value) {
+	        return Arrays.stream(values())
+	            .filter(n -> n.valorNota == value)
+	            .findFirst();
+	    }
+	    
+	    public static Notas getNota(int index) {
+	        for (Notas n : Notas.values()) {
+	            if (n.valorNota == index) return n;
+	        }
+	        throw new IllegalArgumentException("Nota não existe!");
+	     }
+	     
 	}
 
 	public int valorCaixa() {
